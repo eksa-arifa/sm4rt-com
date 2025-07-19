@@ -11,5 +11,25 @@
     @yield('content')
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if(Session::has('success'))
+    <script>
+        Swal.fire({
+            title: "{!! Session::get('success') !!}",
+            icon: 'success'
+        })
+    </script>
+    @endif
+
+    @if(Session::has('error'))
+    <script>
+        Swal.fire({
+            title: "{!! Session::get('error') !!}",
+            icon: 'error'
+        })
+    </script>
+    @endif
+
 </body>
 </html>

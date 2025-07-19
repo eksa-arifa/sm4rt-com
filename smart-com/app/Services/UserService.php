@@ -3,24 +3,27 @@
 namespace App\Services;
 
 use App\Interfaces\UserServiceInterface;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Repositories\UserRepository;
 
 class UserService implements UserServiceInterface{
 
-    protected $user;
+    protected UserRepository $userRepository;
 
-    public function __construct(User $user)
+    public function __construct(UserRepository $userRepository)
     {
-        $this->user = $user;
+        $this->userRepository = $userRepository;
     }
 
-    public function login(array $userData, $remember)
+    public function login(array $userData)
     {
-        if(Auth::attempt($userData, $remember)){
-            return redirect()->route('dashboard');
+
+        $checkEmail = $this->userRepository->checkEmail($userData["email"]);
+        if($checkEmail){
+            if($this->userRepository->checkPassword($checkEmail, $userData["password"])){
+                return $checkEmail;
+            }
         }else{
-            return redirect()->back()->with("error", "Login gagal");
+            return false;
         }
     }
 

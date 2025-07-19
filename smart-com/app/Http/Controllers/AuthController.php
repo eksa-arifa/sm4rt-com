@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
-use App\Interfaces\UserServiceInterface;
-use App\Models\User;
+use App\Repositories\UserRepository;
 use App\Services\UserService;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -14,9 +14,9 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $user = new User();
+        $userRepository = new UserRepository();
 
-        $this->userService = new UserService($user);
+        $this->userService = new UserService($userRepository);
     }
 
     public function login()
@@ -29,10 +29,30 @@ class AuthController extends Controller
         $validatedrequest = $request->validated();
         
         
-        $this->userService->login([
-            $validatedrequest->email,
-            $validatedrequest->password
-        ], $validatedrequest->remember_me);
+        $login = $this->userService->login([
+            "email" => $validatedrequest["email"],
+            "password" => $validatedrequest["password"]
+        ]);
 
+        if($login){
+            $isRemember = $validatedrequest["remember_me"] ?? "";
+            if($isRemember == "on"){
+                Auth::login($login, true);
+            }else{
+                Auth::login($login);
+            }
+
+            return redirect()->route("dashboard");
+        }else{
+            return redirect()->back()->with("error", "Login gagal");
+        }
+
+    }
+
+    public function actionLogout()
+    {
+        Auth::logout();
+
+        return redirect()->route("login");
     }
 }

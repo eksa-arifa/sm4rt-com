@@ -6,11 +6,12 @@
 
 @section('content')
 
-    
+    <x-sidebar>
+        <div class="py-8 px-8">
+            @yield('page')
+        </div>
+    </x-sidebar>
 
-    <div class="py-20 px-8">
-        @yield('page')
-    </div>
 
 
     @yield('script')
